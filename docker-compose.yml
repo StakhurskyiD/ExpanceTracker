@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  expense-tracker-api:
+    build:
+      context: .
+      dockerfile: backend/ExpenseTracker.API/Dockerfile
+    container_name: expense-tracker-api
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__MongoDB=mongodb://mongo:27017
+    depends_on:
+      - mongo
+
+  expense-tracker-frontend:
+    build:
+      context: ./frontend/expense-tracker-frontend
+      dockerfile: Dockerfile
+    container_name: expense-tracker-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - expense-tracker-api
+
+volumes:
+  mongo-data:
