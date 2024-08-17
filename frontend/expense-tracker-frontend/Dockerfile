@@ -1,12 +1,11 @@
-# Stage 1: Build the angular app
-FROM node:18 AS build
-WORKDIR /app
-COPY . .
-RUN npm install
-RUN npm run build --prod
+FROM node:alpine
 
-# Stage 2: Serve the app with nginx server
-FROM nginx:alpine
-COPY --from=build /app/dist/expense-tracker-frontend /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+WORKDIR /usr/src/app
+
+COPY . /usr/src/app
+
+RUN npm install -g @angular/cli
+
+RUN npm install
+
+CMD ["ng", "serve", "--host", "0.0.0.0"]
